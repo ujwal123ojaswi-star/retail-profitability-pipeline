@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: dim_company
+    description: "Company metadata and competitive-strategy label."
+    columns:
+      - name: company_id
+        description: "Primary key. Clean join key used across the warehouse."
+        tests:
+          - not_null
+          - unique
+      - name: strategy
+        tests:
+          - accepted_values:
+              values: ["cost leadership", "differentiation"]
+
+  - name: fct_profitability
+    description: "Company x quarter profitability fact with macro overlay."
+    columns:
+      - name: profitability_id
+        description: "Surrogate key: company_id + quarter_start."
+        tests:
+          - not_null
+          - unique
+      - name: company_id
+        description: "Foreign key into dim_company."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_company')
+              field: company_id
+      - name: quarter_start
+        tests:
+          - not_null
+      - name: gross_margin
+        description: "Gross profit / revenue. Should sit within a sane band."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: -1
+              max_value: 1
+      - name: operating_margin
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: -1
+              max_value: 1

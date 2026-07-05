@@ -1,0 +1,12 @@
+# Points dbt-duckdb at the same warehouse.duckdb file the loader writes to.
+# The relative path is resolved from where you invoke dbt; the run script and
+# Prefect flow both `cd` into the dbt/ directory, so ../data/warehouse.duckdb
+# resolves to the repo's data/ folder.
+retail_profitability:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "../data/warehouse.duckdb"
+      schema: main
+      threads: 4

@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: "Landed parquet from the ingestion layer (SEC EDGAR + FRED)."
+    tables:
+      - name: sec_financials
+        description: "Long table of us-gaap concept observations per company."
+      - name: fred_macro
+        description: "Long table of FRED macro series observations."
