@@ -15,7 +15,10 @@ import duckdb
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import plotly.io as pio
 import streamlit as st
+
+from app.theme import THEME_CSS, apply_plotly_theme, plotly_chart
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 WAREHOUSE_PATH = str(PROJECT_ROOT / "data" / "warehouse.duckdb")
@@ -30,6 +33,8 @@ MACRO_LABELS = {
 
 st.set_page_config(page_title="Retail Profitability: Cost Leadership vs Differentiation",
                    layout="wide")
+apply_plotly_theme(pio)
+st.markdown(THEME_CSS, unsafe_allow_html=True)
 
 
 @st.cache_data(ttl=3600)
@@ -83,7 +88,7 @@ def margin_gap_chart(df: pd.DataFrame, margin_col: str) -> None:
     fig.add_hline(y=0, line_dash="dot")
     fig.update_yaxes(tickformat=".1%", title="WMT − TGT")
     fig.update_xaxes(title="Quarter")
-    st.plotly_chart(fig, use_container_width=True)
+    plotly_chart(fig, use_container_width=True)
     if not gap.empty:
         widest = gap.loc[gap["margin_gap"].abs().idxmax()]
         st.caption(
@@ -97,7 +102,7 @@ def margin_lines(df: pd.DataFrame, margin_col: str) -> None:
                   title=f"{margin_col.replace('_', ' ').title()} over time")
     fig.update_yaxes(tickformat=".1%", title="Margin")
     fig.update_xaxes(title="Quarter")
-    st.plotly_chart(fig, use_container_width=True)
+    plotly_chart(fig, use_container_width=True)
 
 
 def macro_overlay(df: pd.DataFrame, margin_col: str, macro_col: str) -> None:
@@ -118,7 +123,7 @@ def macro_overlay(df: pd.DataFrame, margin_col: str, macro_col: str) -> None:
                     overlaying="y", side="right"),
         legend=dict(orientation="h", y=-0.2),
     )
-    st.plotly_chart(fig, use_container_width=True)
+    plotly_chart(fig, use_container_width=True)
 
 
 def main() -> None:
@@ -171,7 +176,7 @@ def main() -> None:
                       title="Revenue over time ($B)")
         fig.update_xaxes(title="Quarter")
         fig.update_yaxes(title="Revenue ($B)")
-        st.plotly_chart(fig, use_container_width=True)
+        plotly_chart(fig, use_container_width=True)
     st.divider()
     macro_overlay(df, margin_col, macro_col)
 
